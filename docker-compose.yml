@@ -1,0 +1,113 @@
+# Integrated Healthcare Operations Dashboard - Docker Compose
+# Author: Alexander Efrem - IT Operations Specialist, AEL Dubai
+# Timeline: October 2024 - December 2024
+
+version: "3.9"
+
+services:
+  dashboard-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    container_name: healthcare-dashboard-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://dashboard-api:4000/graphql
+      - VITE_WS_URL=ws://dashboard-api:4000/graphql
+    depends_on:
+      - dashboard-api
+    restart: unless-stopped
+    networks:
+      - dashboard-network
+
+  dashboard-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    container_name: healthcare-dashboard-api
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - INFLUX_URL=http://influxdb:8086
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
+      - INFLUX_ORG=${INFLUX_ORG:-ael-dubai}
+      - INFLUX_BUCKET=${INFLUX_BUCKET:-healthcare-metrics}
+      - JWT_SECRET=${JWT_SECRET}
+      - OKTA_ISSUER=${OKTA_ISSUER}
+      - OKTA_CLIENT_ID=${OKTA_CLIENT_ID}
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - dashboard-network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  influxdb:
+    image: influxdb:2.7
+    container_name: healthcare-dashboard-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUX_USERNAME:-admin}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUX_PASSWORD:-healthcareAdmin2024}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUX_ORG:-ael-dubai}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUX_BUCKET:-healthcare-metrics}
+      - DOCKER_INFLUXDB_INIT_RETENTION=90d
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN}
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+      - influxdb_config:/etc/influxdb2
+    restart: unless-stopped
+    networks:
+      - dashboard-network
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:10.3.1
+    container_name: healthcare-dashboard-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://grafana.ael-dubai.ae
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+    networks:
+      - dashboard-network
+
+volumes:
+  influxdb_data:
+    driver: local
+  influxdb_config:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  dashboard-network:
+    driver: bridge
+    name: healthcare-dashboard-network
