@@ -1,7 +1,6 @@
 /**
  * InfluxDB Client and Query Manager
  * Project: Integrated Healthcare Operations Dashboard
- * Author: Alexander Efrem - IT Operations Specialist, AEL Dubai
  * Timeline: October 2024 - December 2024
  *
  * Manages connections to InfluxDB for time-series metric storage

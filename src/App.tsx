@@ -1,6 +1,5 @@
 /**
  * Healthcare Operations Dashboard
- * IT Operations Specialist - AEL Dubai (2024)
  */
 
 import React from 'react';
@@ -18,7 +17,7 @@ const App: React.FC = () => {
       <div className="app">
         <header className="app-header">
           <h1>Healthcare IT Operations</h1>
-          <span className="org-name">AEL Dubai</span>
+          <span className="org-name">Example Org</span>
         </header>
         <main>
           <Dashboard />

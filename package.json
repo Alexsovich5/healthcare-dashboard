@@ -1,7 +1,7 @@
 {
   "name": "healthcare-dashboard",
   "version": "1.0.0",
-  "description": "Healthcare Operations Dashboard - AEL Dubai",
+  "description": "Healthcare Operations Dashboard",
   "scripts": {
     "start": "ts-node server/index.ts",
     "dev": "concurrently \"ts-node server/index.ts\" \"react-scripts start\"",

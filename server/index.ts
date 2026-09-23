@@ -1,6 +1,5 @@
 /**
  * Healthcare Dashboard - GraphQL Server
- * IT Operations Specialist - AEL Dubai (2024)
  */
 
 import { ApolloServer } from '@apollo/server';

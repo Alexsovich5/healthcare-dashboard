@@ -1,7 +1,6 @@
 /**
  * GraphQL Resolver Implementations
  * Project: Integrated Healthcare Operations Dashboard
- * Author: Alexander Efrem - IT Operations Specialist, AEL Dubai
  * Timeline: October 2024 - December 2024
  *
  * Resolvers that connect GraphQL queries to InfluxDB time-series data,

@@ -1,7 +1,6 @@
 /**
  * Alert Aggregation Widget
  * Project: Integrated Healthcare Operations Dashboard
- * Author: Alexander Efrem - IT Operations Specialist, AEL Dubai
  * Timeline: October 2024 - December 2024
  *
  * Aggregates and displays alerts from multiple sources including
